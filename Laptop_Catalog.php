@@ -78,11 +78,15 @@
                         <?php } ?>
                     <?php } ?>
                     <p class="card-text"><?php echo 'Brand : '.$brand_laptop ?></p>
-                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
+                    <p class="card-text"><?php echo 'Processor : '.$value->processor_name ?></p>
+                    <p class="card-text"><?php echo 'Processor Gen : '.$value->processor_gen ?></p>
+                    <p class="card-text"><?php echo 'RAM : '.$value->ram." GB" ?></p>
+                    <p class="card-text"><?php echo 'RAM Type : '.$value->ram_type ?></p>
+                    <?php if ($value->ssd == "0") { ?>
+                        <p class="card-text"><?php echo 'HDD : '.$value->hdd." GB" ?></p>
+                    <?php } elseif ($value->hdd == "0") { ?>
+                        <p class="card-text"><?php echo 'SSD : '.$value->ssd." GB" ?></p>
+                    <?php } ?>
                 </div>
             </div>
         <?php $count++; } ?>
