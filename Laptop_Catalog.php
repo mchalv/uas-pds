@@ -1,14 +1,22 @@
 <?php
     require 'autoload.php';
+
     $client = new MongoDB\Client(
         'mongodb://127.0.0.1:27017'
     );
     $laptop = $client->uas_pds->laptop_model;
     $cursor_laptop = $laptop->find();
+
     $brand = $client->uas_pds->brand;
     $cursor_brand = $brand->find();
 
     $brand_laptop = "";
+    $count = 0;
+    $array_brand = array("");
+
+    foreach ($cursor_brand as $value2) {
+        array_push($array_brand, $value2->brand);
+    }
 ?>
 
 <?php
@@ -55,30 +63,29 @@
         </div>
     </nav>
 
-    <?php $count = 0; ?>
-    <?php foreach ( $cursor_laptop as $id => $value ) { ?>
-            <?php if($count==0){?>
-                    <?php echo '<div class="card-group">'; $count++;?>
-            <?php }elseif($count==4){?>
-                    <?php echo '</div>'; $count = 0; ?>
-            <?php } else{ ?>
-                <div class="card text-white bg-secondary border-dark">
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo $value->tipe_laptop ?></h5>
-                        <?php foreach ( $cursor_brand as $id2 => $value2 ) {  ?>
-                                <?php if($value->tipe_laptop == $value2->id){ ?>
-                                    <?php $brand_laptop = $value2->brand ?>
-                                <?php } ?>
+    <?php foreach ($cursor_laptop as $id => $value) { ?>
+        <?php if ($count == 0) { ?>
+            <?php echo '<div class="card-group">'; $count++; ?>
+        <?php } elseif ($count == 4) { ?>
+            <?php echo '</div>'; $count = 0; ?>
+        <?php } else { ?>
+            <div class="card text-white bg-secondary border-dark">
+                <div class="card-body">
+                    <h5 class="card-title"><?php echo $value->tipe_laptop ?></h5>
+                    <?php for ($j = 0; $j < 21; $j++) { ?>
+                        <?php if ($j == $value->id_brand) { ?>
+                            <?php $brand_laptop = $array_brand[$j]; ?>
                         <?php } ?>
-                        <p class="card-text"><?php echo 'Brand : '.$brand_laptop ?></p>
-                        <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                        <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                        <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                        <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                        <p class="card-text"><?php echo $value->tipe_laptop ?></p>
-                    </div>
+                    <?php } ?>
+                    <p class="card-text"><?php echo 'Brand : '.$brand_laptop ?></p>
+                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
+                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
+                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
+                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
+                    <p class="card-text"><?php echo $value->tipe_laptop ?></p>
                 </div>
-            <?php $count++; } ?>
+            </div>
+        <?php $count++; } ?>
     <?php } ?>
 
     <!-- <div class="card-group">
