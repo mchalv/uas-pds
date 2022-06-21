@@ -1,4 +1,6 @@
 <?php
+    require_once "config/config_sql.php";
+
     require 'autoload.php';
 
     $client = new MongoDB\Client(
@@ -9,6 +11,7 @@
 
     $brand = $client->uas_pds->brand;
     $cursor_brand = $brand->find();
+    $cursor_brand2 = $brand->find();
 
     $rating = $client->uas_pds->rating;
     $cursor_rating = $rating->find();
@@ -26,7 +29,7 @@
 
     $array_jumlah_perating = array();
 
-    for($i = 0; $i < 896; $i++){
+    for($i = 0; $i < $laptop->count(); $i++){
         array_push($array_jumlah_rating, 0);
         array_push($array_jumlah_perating, 0);
     }
@@ -40,13 +43,6 @@
 
     // $array2d = array(array(1, 2, 3, 4), array(5, 5, 5, 5));
     // print_r($array2d);
-?>
-
-<?php
-    // Include config file
-    require_once "../config/config_sql.php";
-
-    
 ?>
 
 <?php
@@ -180,7 +176,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <table border="1" class="table">
+                        <tr>
+                            <th>ID</th>
+                            <th>Brand</th>
+                            <th>Total Penjualan</th>
+                        </tr>
+                        <?php 
+                            $query_mysql = mysql_query("SELECT * FROM user")or die(mysql_error());
+                            
+                            foreach ($cursor_brand2 as $v) {
+                                echo "<tr>";
+                                echo "<td>".$v->id."</td>";
+                                echo "<td>".$v->brand."</td>";
+                            }
+                            
+                            // $nomor = 1;
+                            // while($data = mysql_fetch_array($query_mysql)){
+                        ?>
+                    </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
