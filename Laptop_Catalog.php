@@ -8,6 +8,7 @@
     );
     $laptop = $client->uas_pds->laptop_model;
     $cursor_laptop = $laptop->find();
+    $cursor_laptop_transaksi = $laptop->find();
 
     $brand = $client->uas_pds->brand;
     $cursor_brand = $brand->find();
@@ -17,8 +18,10 @@
     $cursor_rating = $rating->find();
 
     $count = 0;
+    $count_brand = 1;
 
-    $brand_laptop = "";
+    $array_id_brand_laptop = array("");
+    $array_brand_laptop = array("");
     $array_brand = array("");
 
     foreach ($cursor_brand as $value2) {
@@ -28,6 +31,8 @@
     $array_jumlah_rating = array();
 
     $array_jumlah_perating = array();
+
+    $array_jumlah_brand_terjual = array();
 
     for($i = 0; $i < $laptop->count(); $i++){
         array_push($array_jumlah_rating, 0);
@@ -41,8 +46,25 @@
         $array_jumlah_perating[$id_laptop_rating - 1] += 1;
     }
 
-    // $array2d = array(array(1, 2, 3, 4), array(5, 5, 5, 5));
-    // print_r($array2d);
+    foreach ($cursor_laptop_transaksi as $value4) {
+        array_push($array_brand_laptop, $array_brand[$value4->id_brand]);
+        array_push($array_id_brand_laptop, $value4->id_brand);
+    }
+
+    $sql_transaksi = "SELECT id_laptop FROM transaksi";
+    $query_transaksi = mysqli_query($link, $sql_transaksi);
+    $item_terjual = array("");
+    while($row = mysqli_fetch_assoc($query_transaksi)) {
+        array_push($item_terjual, $row);
+    }
+    
+    for($i = 0; $i < count($array_brand); $i++){
+        array_push($array_jumlah_brand_terjual, 0);
+    }
+
+    for($i = 0; $i < count($item_terjual) - 1; $i++){
+        $array_jumlah_brand_terjual[$array_id_brand_laptop[$item_terjual[$i + 1]['id_laptop']]] += 1;
+    }
 ?>
 
 <?php
@@ -53,6 +75,11 @@
     if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         header("location: auth/login.php");
         exit;
+    }
+
+    if(isset($_POST['filter'])){
+        $selected_val = $_POST['filter_'];
+        echo $selected_val;
     }
 ?>
 
@@ -70,14 +97,12 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="Laptop_Catalog.php">Laptop's Catalog</a>
             <form action="" method="post">
-                <select name="filter" class="bg-secondary">
-                    <option value=pilihan1>High spec and low price</option>
-                    <option value=pilihan2>Best Selling Brand</option>
-                    <option value=pilihan3>High rate and low price</option>
+                <select name="filter_" class="bg-secondary">
+                    <option value="High spec and low price">High spec and low price</option>
+                    <option value="Best Selling Brand">Best Selling Brand</option>
+                    <option value="High rate and low price">High rate and low price</option>
                 </select>
-                <button class="btn btn-outline-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Filter
-                </button>
+                <input class="btn btn-outline-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" name="filter" value="Filter">
             </form>
             <div class="dropstart">
                 <button type="button" class="btn btn-secondary dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">
@@ -98,13 +123,9 @@
             <div class="card text-white bg-secondary border-dark">
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $value->tipe_laptop ?></h5>
-                    <?php for ($j = 0; $j < 21; $j++) { ?>
-                        <?php if ($j == $value->id_brand) { ?>
-                            <?php $brand_laptop = $array_brand[$j]; ?>
-                        <?php } ?>
-                    <?php } ?>
+                    
                     <p class="card-text"><?php echo 'ID : '.$value->id ?></p>
-                    <p class="card-text"><?php echo 'Brand : '.$brand_laptop ?></p>
+                    <p class="card-text"><?php echo 'Brand : '.$array_brand_laptop[$count_brand++] ?></p>
                     <p class="card-text"><?php echo 'Processor : '.$value->processor_name ?></p>
                     <p class="card-text"><?php echo 'Processor Gen : '.$value->processor_gen ?></p>
                     <p class="card-text"><?php echo 'RAM : '.$value->ram." GB" ?></p>
@@ -172,7 +193,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel"><?php echo $selected_val; ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -183,12 +204,14 @@
                             <th>Total Penjualan</th>
                         </tr>
                         <?php 
-                            $query_mysql = mysql_query("SELECT * FROM user")or die(mysql_error());
-                            
+                            //$query_mysql = mysql_query("SELECT * FROM user")or die(mysql_error());
+                            $c=0;
                             foreach ($cursor_brand2 as $v) {
                                 echo "<tr>";
                                 echo "<td>".$v->id."</td>";
                                 echo "<td>".$v->brand."</td>";
+                                echo "<td>". $array_jumlah_brand_terjual[$c++], "</td>";
+                                echo "</tr>";
                             }
                             
                             // $nomor = 1;
