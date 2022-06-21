@@ -9,7 +9,7 @@
     }
     
     // Include config file
-    require_once "../config/config.php";
+    require_once "../config/config_sql.php";
     
     // Define variables and initialize with empty values
     $new_password = $confirm_password = "";

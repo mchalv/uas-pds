@@ -64,7 +64,7 @@
                                 $_SESSION["username"] = $username;                            
                                 
                                 // Redirect user to welcome page
-                                header("location: ../welcome.php");
+                                header("location: ../Laptop_Catalog.php");
                             } else{
                                 // Password is not valid, display a generic error message
                                 $login_err = "Jeneng Panganggo utawa Sandi e salah bro.";
