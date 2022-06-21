@@ -1,86 +1,5 @@
-<?php
-    require_once "config/config_sql.php";
-
-    require 'autoload.php';
-
-    $client = new MongoDB\Client(
-        'mongodb://127.0.0.1:27017'
-    );
-    $laptop = $client->uas_pds->laptop_model;
-    $cursor_laptop = $laptop->find();
-    $cursor_laptop_transaksi = $laptop->find();
-
-    $brand = $client->uas_pds->brand;
-    $cursor_brand = $brand->find();
-    $cursor_brand2 = $brand->find();
-
-    $rating = $client->uas_pds->rating;
-    $cursor_rating = $rating->find();
-
-    $count = 0;
-    $count_brand = 1;
-
-    $array_id_brand_laptop = array("");
-    $array_brand_laptop = array("");
-    $array_brand = array("");
-
-    foreach ($cursor_brand as $value2) {
-        array_push($array_brand, $value2->brand);
-    }
-
-    $array_jumlah_rating = array();
-
-    $array_jumlah_perating = array();
-
-    $array_jumlah_brand_terjual = array();
-
-    for($i = 0; $i < $laptop->count(); $i++){
-        array_push($array_jumlah_rating, 0);
-        array_push($array_jumlah_perating, 0);
-    }
-
-    foreach ($cursor_rating as $value3) {
-        $id_laptop_rating = $value3->id_laptop;
-        
-        $array_jumlah_rating[$id_laptop_rating - 1] += $value3->rating;
-        $array_jumlah_perating[$id_laptop_rating - 1] += 1;
-    }
-
-    foreach ($cursor_laptop_transaksi as $value4) {
-        array_push($array_brand_laptop, $array_brand[$value4->id_brand]);
-        array_push($array_id_brand_laptop, $value4->id_brand);
-    }
-
-    $sql_transaksi = "SELECT id_laptop FROM transaksi";
-    $query_transaksi = mysqli_query($link, $sql_transaksi);
-    $item_terjual = array("");
-    while($row = mysqli_fetch_assoc($query_transaksi)) {
-        array_push($item_terjual, $row);
-    }
-    
-    for($i = 0; $i < count($array_brand); $i++){
-        array_push($array_jumlah_brand_terjual, 0);
-    }
-
-    for($i = 0; $i < count($item_terjual) - 1; $i++){
-        $array_jumlah_brand_terjual[$array_id_brand_laptop[$item_terjual[$i + 1]['id_laptop']]] += 1;
-    }
-?>
-
-<?php
-    // Initialize the session
-    session_start();
-    
-    // Check if the user is logged in, if not then redirect him to login page
-    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-        header("location: auth/login.php");
-        exit;
-    }
-
-    if(isset($_POST['filter'])){
-        $selected_val = $_POST['filter_'];
-        echo $selected_val;
-    }
+<?php 
+    require_once "all_query.php";
 ?>
 
 <!DOCTYPE html>
@@ -96,14 +15,38 @@
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="Laptop_Catalog.php">Laptop's Catalog</a>
-            <form action="" method="post">
-                <select name="filter_" class="bg-secondary">
+
+            <!-- <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownFilter">
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" name="isi-filter" value="High spec and low price">High spec and low price</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" name="isi-filter" value="Best Selling Brand">Best Selling Brand</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" name="isi-filter" value="High rate and low price">High rate and low price</a></li>
+                </ul>
+            </div> -->
+
+            <!-- <form action="" method="post">
+                <select id="select-filter" name="filter_" class="bg-secondary">
                     <option value="High spec and low price">High spec and low price</option>
                     <option value="Best Selling Brand">Best Selling Brand</option>
                     <option value="High rate and low price">High rate and low price</option>
                 </select>
-                <input class="btn btn-outline-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" name="filter" value="Filter">
-            </form>
+                <input id="filter" class="btn btn-outline-success" type="button" name="filter" value="Filter"/>
+            </form> -->
+
+            <div class="dropdown">
+                <button type="button" class="btn btn-secondary dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">
+                    Analisa
+                </button>
+                <ul class="dropdown-menu bg-secondary ">
+                    <li><a class="dropdown-item" href="analisa1_.php">Best Selling Brand</a></li>
+                    <li><a class="dropdown-item" href="analisa2_.php">High spec and low price</a></li>
+                    <li><a class="dropdown-item" href="analisa3_.php">High rate and low price</a></li>
+                </ul>
+            </div>
+
             <div class="dropstart">
                 <button type="button" class="btn btn-secondary dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">
                     <?php echo htmlspecialchars($_SESSION["username"]); ?>
@@ -189,42 +132,7 @@
         </div>
     </div> -->
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"><?php echo $selected_val; ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table border="1" class="table">
-                        <tr>
-                            <th>ID</th>
-                            <th>Brand</th>
-                            <th>Total Penjualan</th>
-                        </tr>
-                        <?php 
-                            //$query_mysql = mysql_query("SELECT * FROM user")or die(mysql_error());
-                            $c=0;
-                            foreach ($cursor_brand2 as $v) {
-                                echo "<tr>";
-                                echo "<td>".$v->id."</td>";
-                                echo "<td>".$v->brand."</td>";
-                                echo "<td>". $array_jumlah_brand_terjual[$c++], "</td>";
-                                echo "</tr>";
-                            }
-                            
-                            // $nomor = 1;
-                            // while($data = mysql_fetch_array($query_mysql)){
-                        ?>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
