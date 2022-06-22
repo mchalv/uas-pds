@@ -42,7 +42,7 @@
                 </button>
                 <ul class="dropdown-menu bg-secondary ">
                     <li><a class="dropdown-item" href="analisa1_.php">Best Selling Brand</a></li>
-                    <li><a class="dropdown-item" href="analisa2_.php">High spec and low price</a></li>
+                    <li><a class="dropdown-item" href="analisa2_.php">Search Laptop by Price</a></li>
                     <li><a class="dropdown-item" href="analisa3_.php">High rate and low price</a></li>
                 </ul>
             </div>
