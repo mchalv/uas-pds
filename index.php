@@ -2,11 +2,11 @@
     session_start();
     
     if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-        header("location: ../welcome.php");
+        header("location: Laptop_Catalog.php");
         exit;
     }
     
-    require_once "../config/config_sql.php";
+    require_once "config/config_sql.php";
     
     $username = $password = "";
     $username_err = $password_err = $login_err = "";
@@ -45,7 +45,7 @@
                                 $_SESSION["id"] = $id;
                                 $_SESSION["username"] = $username;                            
                                 
-                                header("location: ../Laptop_Catalog.php");
+                                header("location: Laptop_Catalog.php");
                             } else{
                                 $login_err = "Username atau Password salah.";
                             }
@@ -104,7 +104,7 @@
                 <input type="submit" class="btn btn-primary" value="Masuk">
             </div>
 
-            <p>Belum punya akun? <a href="register.php">Daftar sekarang</a>.</p>
+            <p>Belum punya akun? <a href="auth/register.php">Daftar sekarang</a>.</p>
         </form>
     </div>
 
