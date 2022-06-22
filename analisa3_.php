@@ -54,12 +54,6 @@
                 $bul = $db->createCollection("sorting_harga");
                 $bul = $db->sorting_harga;
                 foreach ($cursor_rating2 as $v) {
-                    echo "<tr>";
-                    echo "<td>".$v->id."</td>";
-                    echo "<td>".$array_tipe_laptop[$v->id_laptop]."</td>";
-                    echo "<td>".$v->rating."</td>";
-                    echo "<td>".$array_harga_laptop[$v->id_laptop]."</td>";
-                    echo "</tr>";
                     $insert = $bul->insertOne([
                         "id" => $v->id,
                         "tipe_laptop" => $array_tipe_laptop[$v->id_laptop],

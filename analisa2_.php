@@ -7,13 +7,16 @@
 
     if (!empty($_POST)) {
         if ($_POST["sbmtBtn"] == "Cari") {
-            $cari = $_POST['usr-inpt'];
+            $cari = (int)$_POST['usr-inpt'];
             if(empty($cari)){
                 $cursor_cari = $laptop->find();
             }
             else {
-                $cursor_cari = $laptop->find(['price'=>$cari]);
-                print_r($cursor_cari);
+                
+                $filter=['price' => ['$lte' => $cari]];
+                $options = ['sort' => ['price' => -1]];
+                $cursor_cari = $laptop->find($filter, $options);
+                
             }
         }
     }
@@ -49,7 +52,7 @@
     <div style="margin-left: 12px; margin-bottom: 15px; margin-top: 10px;">
         <h4>Masukkan harga laptop (tertinggi)</h4>
         <form action="" method="post">
-            <input type="text" name="usr-inpt">
+            <input id="user" type="text" name="usr-inpt">
             <input type="submit" class="btn-primary text-white" value="Cari" name="sbmtBtn"/>
         </form>
     </div>
@@ -61,8 +64,7 @@
             <th>Tipe Laptop</th>
             <th>Harga</th>
         </tr>
-        <?php 
-            $c=0;
+        <?php
             foreach ($cursor_cari as $v) {
                 echo "<tr>";
                 echo "<td>".$v->id."</td>";
